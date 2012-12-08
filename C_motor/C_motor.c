@@ -44,7 +44,10 @@
 #define IN2 (1 << PA3) // IN2
 
 volatile int temp = 0;
-volatile char chr = '0';
+volatile unsigned char chr = '0';
+volatile int speed = 1000;
+
+
 
 void get_char(volatile unsigned char *pins, unsigned char pin, char *rxbyte) {
    //
@@ -53,6 +56,71 @@ void get_char(volatile unsigned char *pins, unsigned char pin, char *rxbyte) {
    //
    *rxbyte = 0;
    while (pin_test(*pins,pin))
+      //
+      // wait for start bit
+      //
+      ;
+   //
+   // delay to middle of first data bit
+   //
+   half_bit_delay();
+   bit_delay();
+   //
+   // unrolled loop to read data bits
+   //
+   if pin_test(*pins,pin)
+      *rxbyte |= (1 << 0);
+   else
+      *rxbyte |= (0 << 0);
+   bit_delay();
+   if pin_test(*pins,pin)
+      *rxbyte |= (1 << 1);
+   else
+      *rxbyte |= (0 << 1);
+   bit_delay();
+   if pin_test(*pins,pin)
+      *rxbyte |= (1 << 2);
+   else
+      *rxbyte |= (0 << 2);
+   bit_delay();
+   if pin_test(*pins,pin)
+      *rxbyte |= (1 << 3);
+   else
+      *rxbyte |= (0 << 3);
+   bit_delay();
+   if pin_test(*pins,pin)
+      *rxbyte |= (1 << 4);
+   else
+      *rxbyte |= (0 << 4);
+   bit_delay();
+   if pin_test(*pins,pin)
+      *rxbyte |= (1 << 5);
+   else
+      *rxbyte |= (0 << 5);
+   bit_delay();
+   if pin_test(*pins,pin)
+      *rxbyte |= (1 << 6);
+   else
+      *rxbyte |= (0 << 6);
+   bit_delay();
+   if pin_test(*pins,pin)
+      *rxbyte |= (1 << 7);
+   else
+      *rxbyte |= (0 << 7);
+   //
+   // wait for stop bit
+   //
+   bit_delay();
+   half_bit_delay();
+   }
+
+void get_char_after_interrupt(volatile unsigned char *pins, unsigned char pin, char *rxbyte) {
+   //
+   // read character into rxbyte on pins pin
+   //    assumes line driver (inverts bits)
+   //
+   *rxbyte = 0;
+   //while (pin_test(*pins,pin))
       //
       // wait for start bit
       //
@@ -198,21 +266,26 @@ void delay_ms(int n) {
 }
 
   
-/* ISR(PCINT0_vect) { */
-/*    // */
-/*    // pin change interrupt handler */
-/*    // */
-/*    get_char(&serial_pins, serial_pin_in, &chr); */
-/*    temp = chr - '0'; */
-/*    output(serial_direction, serial_pin_out); */
-/*    put_char(&serial_port, serial_pin_out, chr); */
-/*    input(serial_direction, serial_pin_out); */
-/*    /\* static char message[] PROGMEM = "hello.ftdi.44.echo.interrupt.c: you typed ";  *\/ */
-/*    /\* put_string(&serial_port, serial_pin_out, (PGM_P) message);  *\/ */
-/*    /\* put_char(&serial_port, serial_pin_out, chr);  *\/ */
-/*    /\* put_char(&serial_port, serial_pin_out, '!');  *\/ */
-/*    /\* put_char(&serial_port, serial_pin_out, 10); // new line  *\/ */
-/*    } */
+ISR(PCINT0_vect) {
+   //
+   // pin change interrupt handler
+   //
+   get_char_after_interrupt(&serial_pins, serial_pin_in, &chr);
+   if (chr == 'm') {
+     get_char(&serial_pins, serial_pin_in, &chr);
+     clear(bridge_port,IN2);
+     clear(bridge_port, IN1);
+     _delay_ms(1000);}
+   /* temp = chr - '0'; */
+   /* output(serial_direction, serial_pin_out); */
+   /* put_char(&serial_port, serial_pin_out, chr); */
+   /* input(serial_direction, serial_pin_out); */
+   /* static char message[] PROGMEM = "hello.ftdi.44.echo.interrupt.c: you typed ";  */
+   /* put_string(&serial_port, serial_pin_out, (PGM_P) message);  */
+   /* put_char(&serial_port, serial_pin_out, chr);  */
+   /* put_char(&serial_port, serial_pin_out, '!');  */
+   /* put_char(&serial_port, serial_pin_out, 10); // new line  */
+   }
 
 int main(void) { 
    //
@@ -228,9 +301,9 @@ int main(void) {
    //
    // set up pin change interrupt on input pin
    //
-   /* set(GIMSK, serial_interrupt); */
-   /* set(PCMSK0, serial_interrupt_pin); */
-   /* sei(); */
+   set(GIMSK, serial_interrupt);
+   set(PCMSK0, serial_interrupt_pin);
+   sei();
    //
    // initialize H-bridge pins
    //
@@ -282,14 +355,17 @@ int main(void) {
  //     // wait for interupt
  //     ;
  //      }
-
-   float speed = 0.5;
+   TCCR0B |= (1<< CS00);   // start timer with no prescaler
+   TCNT0=0;                     // Start counter from 0
    while (1) {
+     if (TCNT0<speed) { 
       clear(bridge_port, IN1);
-      set(bridge_port, IN2);
-      delay_us(ceil(100*speed));
+      set(bridge_port, IN2);}
+     else {
       clear(bridge_port,IN2);
-      delay_us(ceil(100*(1-speed)));
+      clear(bridge_port, IN1);}
+     //speed = (int)chr;
+
    }
 
 
