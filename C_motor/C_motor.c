@@ -241,46 +241,57 @@ int main(void) {
    //
    // main loop
    //
+ //   while (1) {
+ //     get_char(&serial_pins, serial_pin_in, &chr);
+ //     temp = chr - '0';
+ //     //put_char(&serial_port, serial_pin_out, chr);
+ //     //_delay_ms(100);
+ //     if (chr == 'm') {
+	// clear(bridge_port, IN1);
+	// set(bridge_port, IN2);
+ //        get_char(&serial_pins, serial_pin_in, &chr);
+	// temp = chr - '0';
+	// //stop motor 1
+	// delay_ms(1000);
+	// clear(bridge_port, IN2);
+ //        clear(bridge_port,IN1);}
+ //     if (chr == '0') {
+ //        clear(bridge_port, IN2);
+ //        clear(bridge_port,IN1);}
+ //      if (temp == 1) {
+	// //motor 1 forward
+	// clear(bridge_port, IN2);
+	// set(bridge_port, IN1);}
+ //      if (temp == 2) {
+	// //motor 1 backwards
+	// clear(bridge_port, IN1);
+	// set(bridge_port, IN2);}
+ //      // Switch to the following for the other motor: 
+ //      /* if (temp == 3) { */
+ //      /* 	//stop motor 2 */
+ //      /* 	clear(bridge_port, IN1); */
+ //      /* 	clear(bridge_port, IN2);} */
+ //      /* if (temp == 4) { */
+ //      /* 	//motor 2 forward */
+ //      /* 	clear(bridge_port, IN2); */
+ //      /* 	set(bridge_port, IN1);} */
+ //      /* if (temp == 5) { */
+ //      /* 	//motor 2 backwards */
+ //      /* 	clear(bridge_port, IN1); */
+ //      /* 	set(bridge_port, IN2);} */
+ //     // wait for interupt
+ //     ;
+ //      }
+
+   float speed = 0.5;
    while (1) {
-     get_char(&serial_pins, serial_pin_in, &chr);
-     temp = chr - '0';
-     //put_char(&serial_port, serial_pin_out, chr);
-     //_delay_ms(100);
-     if (chr == 'm') {
-	clear(bridge_port, IN1);
-	set(bridge_port, IN2);
-        get_char(&serial_pins, serial_pin_in, &chr);
-	temp = chr - '0';
-	//stop motor 1
-	delay_ms(1000);
-	clear(bridge_port, IN2);
-        clear(bridge_port,IN1);}
-     if (chr == '0') {
-        clear(bridge_port, IN2);
-        clear(bridge_port,IN1);}
-      if (temp == 1) {
-	//motor 1 forward
-	clear(bridge_port, IN2);
-	set(bridge_port, IN1);}
-      if (temp == 2) {
-	//motor 1 backwards
-	clear(bridge_port, IN1);
-	set(bridge_port, IN2);}
-      // Switch to the following for the other motor: 
-      /* if (temp == 3) { */
-      /* 	//stop motor 2 */
-      /* 	clear(bridge_port, IN1); */
-      /* 	clear(bridge_port, IN2);} */
-      /* if (temp == 4) { */
-      /* 	//motor 2 forward */
-      /* 	clear(bridge_port, IN2); */
-      /* 	set(bridge_port, IN1);} */
-      /* if (temp == 5) { */
-      /* 	//motor 2 backwards */
-      /* 	clear(bridge_port, IN1); */
-      /* 	set(bridge_port, IN2);} */
-     // wait for interupt
-     ;
-      }
+      clear(bridge_port, IN1);
+      set(bridge_port, IN2);
+      delay_us(ceil(100*speed));
+      clear(bridge_port,IN2);
+      delay_us(ceil(100*(1-speed)));
+   }
+
+
    }
 
