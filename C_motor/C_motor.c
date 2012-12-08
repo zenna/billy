@@ -44,8 +44,8 @@
 #define IN2 (1 << PA3) // IN2
 
 volatile int temp = 0;
-volatile unsigned char chr = '0';
-volatile int speed = 1000;
+volatile unsigned char chr = (char)150;
+volatile int speed = 150;  // 136 (w 2 pretty full 9V batteries) is lowest speed that will overcome static friction.
 
 
 
@@ -272,10 +272,10 @@ ISR(PCINT0_vect) {
    //
    get_char_after_interrupt(&serial_pins, serial_pin_in, &chr);
    if (chr == 'm') {
-     get_char(&serial_pins, serial_pin_in, &chr);
-     clear(bridge_port,IN2);
-     clear(bridge_port, IN1);
-     _delay_ms(1000);}
+     get_char(&serial_pins, serial_pin_in, &chr);}
+     /* clear(bridge_port,IN2); */
+     /* clear(bridge_port, IN1); */
+     /* _delay_ms(1000);} */
    /* temp = chr - '0'; */
    /* output(serial_direction, serial_pin_out); */
    /* put_char(&serial_port, serial_pin_out, chr); */
@@ -288,6 +288,7 @@ ISR(PCINT0_vect) {
    }
 
 int main(void) { 
+  
    //
    // set clock divider to /1
    //
@@ -360,13 +361,12 @@ int main(void) {
    while (1) {
      if (TCNT0<speed) { 
       clear(bridge_port, IN1);
-      set(bridge_port, IN2);}
-     else {
+      set(bridge_port, IN2);
+      }
+     else { 
       clear(bridge_port,IN2);
       clear(bridge_port, IN1);}
-     //speed = (int)chr;
-
-   }
+     speed = (int)chr;   }
 
 
    }
