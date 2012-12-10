@@ -1,4 +1,4 @@
-PROJECT=C_motor
+PROJECT=C_motor_R
 SOURCES=$(PROJECT).c
 MMCU=attiny44
 F_CPU = 20000000

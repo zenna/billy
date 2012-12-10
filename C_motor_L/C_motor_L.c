@@ -44,8 +44,8 @@
 #define IN2 (1 << PA3) // IN2
 
 volatile unsigned char chr = (char)175;
-volatile int speedfor = 175;  // 136 (w 2 pretty full 9V batteries) is lowest speed that will overcome static friction.
-volatile int speedback = 0;  // 136 (w 2 pretty full 9V batteries) is lowest speed that will overcome static friction.
+volatile int speedfor = 0;  // 136 (w 2 pretty full 9V batteries) is lowest speed that will overcome static friction.
+volatile int speedback = 255;  // 136 (w 2 pretty full 9V batteries) is lowest speed that will overcome static friction.
 
 
 
@@ -363,34 +363,35 @@ int main(void) {
    TCCR0B |= (1<< CS00);   // start timer with no prescaler
    TCNT0=0;                     // Start counter from 0
    while (1) {
+     if ((TCNT0>=speedback)&(TCNT0>=speedfor)) {
+       clear(bridge_port,IN2);
+       clear(bridge_port, IN1);}
+     else {
      if (TCNT0<speedback) {
 	 set(bridge_port, IN1);
        }
- else { 
      if (TCNT0<speedfor) { 
       set(bridge_port, IN2);
       }
-    
-      clear(bridge_port,IN2);
-      clear(bridge_port, IN1);
+     }
       if (!pin_test(serial_pins,serial_pin_in)) {
-	get_char_quick(&serial_pins, serial_pin_in, &chr);
+      	get_char_quick(&serial_pins, serial_pin_in, &chr);
       }
-      if ((chr == 'm')) {
-	get_char_quick(&serial_pins, serial_pin_in, &chr);
-	speedfor = (int)chr; 
-	speedback = 0;
-	   /* clear(bridge_port,IN2); */
-	   /* clear(bridge_port, IN1); */
-	   /* delay_ms(1000); */}
-      if ((chr == 'n')) {
+      if ((chr == 'o')) {
+      	get_char_quick(&serial_pins, serial_pin_in, &chr);
+      	speedfor = (int)chr;
+      	speedback = 0;
+      	   /* clear(bridge_port,IN2); */
+      	   /* clear(bridge_port, IN1); */
+      	   /* delay_ms(1000); */}
+      if ((chr == 'p')) {
       	get_char_quick(&serial_pins, serial_pin_in, &chr);
       	speedback = (int)chr;
       	speedfor = 0;
       	   /* clear(bridge_port,IN2); */
       	   /* clear(bridge_port, IN1); */
       	/* delay_ms(1000); */}
-     }
+     
      
    }
    }

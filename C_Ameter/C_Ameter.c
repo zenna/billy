@@ -211,8 +211,8 @@ int main(void) {
    index = 0;
    while (1) {
       get_char(&serial_pins, serial_pin_in, &chr);
-      int temp = chr-'0';
-      if (temp == 7) {
+      //int temp = chr-'0';
+      if (chr == 't') {
 	//read sensors
 	 //
 	 // init A/D
