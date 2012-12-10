@@ -120,14 +120,14 @@ void get_char_quick(volatile unsigned char *pins, unsigned char pin, char *rxbyt
    //    assumes line driver (inverts bits)
    //
    *rxbyte = 0;
-   int n = 1; 
-   int p = 0;
-   while (n>0) {
-     p =  (!(pin_test(*pins,pin)));
-     if (p) {
-       n = 0;}
-     n = n-1;}
-   if (p) {
+   /* int n = 1;  */
+   /* int p = 0; */
+   /* while (n>0) { */
+   /*   p =  (!(pin_test(*pins,pin))); */
+   /*   if (p) { */
+   /*     n = 0;} */
+   /*   n = n-1;} */
+   /* if (p) { */
       //
       // wait for start bit
       //
@@ -183,7 +183,7 @@ void get_char_quick(volatile unsigned char *pins, unsigned char pin, char *rxbyt
    //
    bit_delay();
    half_bit_delay();
-     }}
+}//}
 
 void put_char(volatile unsigned char *port, unsigned char pin, char txchar) {
    //
@@ -271,25 +271,57 @@ void delay_ms(int n) {
   }
 }
 
+// This rotates the wheel either 
+void rotate_wheel(int *to_move, int *to_not_move) {
+  	int n_tries = 10;
+	int is_start_bit = 0;
+	while (n_tries>0) {
+	  is_start_bit =  (!(pin_test(serial_pins, serial_pin_in)));
+	  if (is_start_bit) {
+	    n_tries = 0;}
+	  n_tries = n_tries-1;}
+	if (is_start_bit) {
+	  get_char_quick(&serial_pins, serial_pin_in, &chr);
+      	*to_move = (int)chr;
+      	*to_not_move = 0;
+}
+      	   /* clear(bridge_port,IN2); */
+      	   /* clear(bridge_port, IN1); */
+      	   /* delay_ms(1000); */
+}
+
   
-/* ISR(PCINT0_vect) { */
-/*    // */
-/*    // pin change interrupt handler */
-/*    // */
-/*    /\* get_char_after_interrupt(&serial_pins, serial_pin_in, &chr); *\/ */
-/*    /\* if (chr == 'm') { *\/ */
-/*    /\*   if (!(pin_test(serial_pins, serial_pin_in))) { *\/ */
-/*    /\*     get_char_after_interrupt(&serial_pins, serial_pin_in, &chr);  *\/ */
-/*    /\* /\\* temp = chr - '0'; *\\/ *\/ */
-/*    /\* /\\* output(serial_direction, serial_pin_out); *\\/ *\/ */
-/*    /\*   }} *\/ */
-/*    /\* input(serial_direction, serial_pin_out); *\/ */
-/*    /\* static char message[] PROGMEM = "hello.ftdi.44.echo.interrupt.c: you typed ";  *\/ */
-/*    /\* put_string(&serial_port, serial_pin_out, (PGM_P) message);  *\/ */
-/*    /\* put_char(&serial_port, serial_pin_out, chr);  *\/ */
-/*    /\* put_char(&serial_port, serial_pin_out, '!');  *\/ */
-/*    /\* put_char(&serial_port, serial_pin_out, 10); // new line  *\/ */
-/*    } */
+ISR(PCINT0_vect) {
+      get_char_quick(&serial_pins, serial_pin_in, &chr);
+      if ((chr == 'n')) {
+	rotate_wheel(&speedback,&speedfor);
+      }
+      if ((chr == 'm')) {
+	rotate_wheel(&speedfor, &speedback);
+      }
+
+}
+     
+
+
+
+   //
+   // pin change interrupt handler
+   //
+   /* get_char_after_interrupt(&serial_pins, serial_pin_in, &chr); */
+   /* if (chr == 'm') { */
+   /*   if (!(pin_test(serial_pins, serial_pin_in))) { */
+   /*     get_char_after_interrupt(&serial_pins, serial_pin_in, &chr);  */
+   /* /\* temp = chr - '0'; *\/ */
+   /* /\* output(serial_direction, serial_pin_out); *\/ */
+   /*   }} */
+   /* input(serial_direction, serial_pin_out); */
+   /* static char message[] PROGMEM = "hello.ftdi.44.echo.interrupt.c: you typed ";  */
+   /* put_string(&serial_port, serial_pin_out, (PGM_P) message);  */
+   /* put_char(&serial_port, serial_pin_out, chr);  */
+   /* put_char(&serial_port, serial_pin_out, '!');  */
+   /* put_char(&serial_port, serial_pin_out, 10); // new line  */
+   
 
 int main(void) { 
   
@@ -306,9 +338,9 @@ int main(void) {
    //
    // set up pin change interrupt on input pin
    //
-   /* set(GIMSK, serial_interrupt); */
-   /* set(PCMSK0, serial_interrupt_pin); */
-   /* sei(); */
+   set(GIMSK, serial_interrupt);
+   set(PCMSK0, serial_interrupt_pin);
+   sei();
    //
    // initialize H-bridge pins
    //
@@ -323,34 +355,19 @@ int main(void) {
    TCNT0=0;                     // Start counter from 0
    while (1) {
      if ((TCNT0>=speedback)&(TCNT0>=speedfor)) {
+       clear(bridge_port, IN1);
        clear(bridge_port,IN2);
-       clear(bridge_port, IN1);}
+       }
      else {
      if (TCNT0<speedback) {
+       clear(bridge_port, IN2);
 	 set(bridge_port, IN1);
        }
      if (TCNT0<speedfor) { 
+       clear(bridge_port, IN1);
       set(bridge_port, IN2);
       }
      }
-      if (!pin_test(serial_pins,serial_pin_in)) {
-      	get_char_quick(&serial_pins, serial_pin_in, &chr);
-      }
-      if ((chr == 'm')) {
-      	get_char_quick(&serial_pins, serial_pin_in, &chr);
-      	speedfor = (int)chr;
-      	speedback = 0;
-      	   /* clear(bridge_port,IN2); */
-      	   /* clear(bridge_port, IN1); */
-      	   /* delay_ms(1000); */}
-      if ((chr == 'n')) {
-      	get_char_quick(&serial_pins, serial_pin_in, &chr);
-      	speedback = (int)chr;
-      	speedfor = 0;
-      	   /* clear(bridge_port,IN2); */
-      	   /* clear(bridge_port, IN1); */
-      	/* delay_ms(1000); */}
-     
      
    }
    }
