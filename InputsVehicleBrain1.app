@@ -134,35 +134,35 @@ class MyFrame(wx.Frame):
            return (sense0)
            #time.sleep(0.01)
         n_retries = 1
+        delay = .002
         def Rfor(a):
            for i in range(n_retries):
-              ser.flushInput()
-              ser.flushOutput()
+              #ser.flushInput()
+              #ser.flushOutput()
               ser.write('m')
               ser.write(chr(a))
-           #time.sleep(.2)
+              time.sleep(delay)
         def Rback(a):
            for i in range(n_retries):
-              ser.flushInput()
-              ser.flushOutput()
+              #ser.flushInput()
+              #ser.flushOutput()
               ser.write('n')
               ser.write(chr(a))
-           #time.sleep(.2)
+              time.sleep(delay)
         def Lfor(a):
            for i in range(n_retries):
-              ser.flushInput()
-              ser.flushOutput()
+              #ser.flushInput()
+              #ser.flushOutput()
               ser.write('o')
               ser.write(chr(a))
-           #time.sleep(.2)
+              time.sleep(delay)
         def Lback(a):
            for i in range(n_retries):
-              ser.flushInput()
-              ser.flushOutput()
+              #ser.flushInput()
+              #ser.flushOutput()
               ser.write('p')
               ser.write(chr(a))
-           #time.sleep(.2)
-           #time.sleep(.2)
+              time.sleep(delay)
         code_globals = {'ser': ser, 'Sense': Sense, 'Rfor': Rfor, 'Rback': Rback, 'Lfor': Lfor, 'Lback':Lback, 'Tilt': Tilt}
         code_locals = {}
         code_object = compile("import sys,time,serial\nfrom select import *\n" + Ed.text, '<string>', 'exec')
@@ -171,3 +171,31 @@ class MyFrame(wx.Frame):
 app = wx.App(False)  # Create a new app, don't redirect stdout/stderr to a window.
 frame = MyFrame(None, "Emily's Editor")
 app.MainLoop()
+
+
+"""    def Motor(R_turn, L_turn):
+           ser.flushInput()
+           ser.flushOutput()
+           if (R_turn>0):
+              Rf = R_turn
+              Rb = 0
+           elif (R_turn<0):
+              Rb = -R_turn
+              Rf = 0
+           else:
+              Rb = 0
+              Rf = 0
+           if (L_turn>0):
+              Lf = L_turn
+              Lb = 0
+           elif (L_turn<0):
+              Lb = -L_turn
+              Lf = 0
+           else:
+              Lb = 0
+              Lf = 0
+           ser.write('m')
+           ser.write(chr(Rf))
+           ser.write(chr(Rb))
+           ser.write(chr(Lf))
+           ser.write(chr(Lb))"""
