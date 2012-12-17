@@ -6,7 +6,7 @@ t_old = Tilt()
 while(1):
     try:
         t = Tilt()
-        t_diff = t t_old
+        t_diff = t - t_old
         t_old = t
 
         if t < min_tilt:
@@ -21,13 +21,15 @@ while(1):
 
         speed = 80
         print(t_diff)
-
+        scalar = 10
         if (t_diff > 0):
-            Rfor(t_diff*256/1024)
-            Lfor(t_diff*256/1024)
+            Rfor(t_diff*scalar*256/1024)
+            Lfor(t_diff*scalar*256/1024)
+	    print(t_diff*scalar*256/1024)
         else:
-            Rback(-t_diff*256/1024)
-            Lback(-t_diff*256/1024)
+            Rback(-t_diff*scalar*256/1024)
+            Lback(-t_diff*scalar*256/1024)
+	    print(t_diff*scalar*256/1024)
 
     except:
         pass

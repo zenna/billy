@@ -3768,7 +3768,7 @@ w1 = .03
 mask = .004
 exsp = .8
 
-pcb = PCB(x-.7,y-.2,width+1.4,height+.5,mask)
+pcb = PCB(x-.85,y-.2,width+1.4,height+.5,mask)
 
 IC1 = ATtiny44_SOICN('IC1\nt44')
 pcb = IC1.add(pcb,x+.37,y+.67,z)
@@ -3795,10 +3795,28 @@ pcb = wire(pcb,w,
 
 pcb = wire(pcb,w1,
    J1.pad[6],
-   point(J1.pad[6].x,J1.pad[6].y-.07,z))
+   point(J1.pad[6].x,J1.pad[6].y-.14,z))
 
 J2 = header_power('J2\npower')
 pcb = J2.add(pcb,x-.4,IC1.y-.15,z,angle=90)
+
+J3 = header_power('J3\npower')
+pcb = J3.add(pcb,x-.7,IC1.y-.15,z,angle=90)
+
+pcb = wire(pcb, w, 
+    J3.pad[2], 
+    point(J3.pad[2].x, J3.y-.03, z),
+    J2.pad[2])
+
+pcb = wire(pcb,w, 
+    J3.pad[4], 
+    point(J3.pad[4].x, J3.pad[4].y-.1,z),
+    J2.pad[4])
+
+pcb = wire(pcb,w,
+    J2.pad[1], 
+    point(J2.pad[1].x, J2.pad[1].y-.08,z), 
+    J3.pad[1])
 
 IC2 = regulator_SOT23('IC2\n5V')
 pcb = IC2.add(pcb,J2.x,J2.y+.28,z,angle=0)
@@ -3864,19 +3882,25 @@ J4 = header_4('J4')
 pcb = J4.add(pcb,IC4.x+.4,IC4.y+.03,z,angle=0)
 
 pcb = wire(pcb, w, 
-    IC4.pad[3],
-    #point(IC1.pad[12].x+.15,IC1.pad[12].y,z),
-    IC1.pad[10])
+    IC4.pad[2], 
+    point(IC1.pad[8].x+.1, IC1.pad[8].y, z), 
+    IC1.pad[8])
+
+R5 = R_1206('R5\n0')
+pcb = R5.add(pcb, J1.pad[6].x+.35, J1.pad[6].y,z)    
+
+pcb = wire(pcb,w, 
+    R5.pad[2],
+    IC4.pad[4])
+
+pcb = wire(pcb,w,
+    R5.pad[1], 
+    J1.pad[2])
 
 pcb = wire(pcb, w, 
-    IC4.pad[2],
-    #point(IC1.pad[13].x+.1,IC1.pad[13].y,z),
-    IC1.pad[11])
-
-#pcb = wire(pcb, w, 
- #   IC4.pad[1],
-  #  point(IC1.pad[14].x+.02,IC1.pad[14].y,z),
-   # IC1.pad[14])
+    IC4.pad[3], 
+    point(R5.x, R5.y-.08, z),
+    J1.pad[4])
 
 pcb = wire(pcb,w,
    IC4.pad[1],
@@ -3938,13 +3962,12 @@ pcb = wire(pcb, w,
     XTAL1.pad[2], 
     IC2.pad[3])
 
+
 pcb = wire(pcb, w1, 
     point(IC4.x,IC4.y,z), 
-    point(IC4.x, J1.pad[6].y-.1,z), 
+    point(IC4.x, J1.pad[6].y-.14,z), 
     point(J2.pad[1].x+.1, J2.pad[1].y,z),
     J2.pad[1])
-
-
 
 R2 = R_1206('R2\n0')
 pcb = R2.add(pcb,J4.x,J6.y+.25,z, angle = 90)
@@ -3957,10 +3980,20 @@ pcb = wire(pcb, w1,
     point(IC4.x+.2, J1.pad[6].y-.1,z), 
     R3.pad[1])
 
+R6 = R_1206('R6\n0')
+pcb = R6.add(pcb, J2.x-.15,C1.y,z, angle = 90)
+
+pcb = wire(pcb, w1, 
+    J2.pad[3], 
+    R6.pad[1])
+
 pcb = wire(pcb,w1, 
     R2.pad[2],
-    point(J2.pad[3].x-.1, J2.pad[3].y, z),
-    J2.pad[3])
+    R6.pad[2])
+
+pcb = wire(pcb,w,
+    C1.pad[1], 
+    J3.pad[3])
 
 pcb = wire(pcb, w, 
     J2.pad[2], 
@@ -3985,8 +4018,7 @@ pcb = wire(pcb,w,
     XTAL1.pad[2], 
     R4.pad[1])
 
-pcb = wire(pcb,w, 
-    J1.pad[2], IC4.pad[4])
+
 
 #
 # select output
@@ -4015,8 +4047,8 @@ else:
 #
 
 d = 0.05
-cad.xmin = x-.7-d # min x to render
-cad.xmax = x-.7+width+1.4+d # max x to render
+cad.xmin = x-.85-d # min x to render
+cad.xmax = x-.85+width+1.4+d # max x to render
 cad.ymin = y-.2-d # min y to render
 cad.ymax = y-.2+height+.5+d # max y to render
 cad.zmin = cad.zmax = z # z to zender

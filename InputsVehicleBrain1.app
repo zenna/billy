@@ -50,7 +50,7 @@ class MyFrame(wx.Frame):
         port = "/Dev/tty.usbserial-FTFBGOT5"
         #PortText = wx.TextCtrl(self, -1, pos = (600, 50), size = (200,25))
         #PortText.WriteText(port)
-        speed = 115200
+        speed = 9600
         #PortText = wx.TextCtrl(self, -1, pos = (600, 75), size = (200,25))
         #PortText.WriteText(speed)
         #
@@ -134,13 +134,14 @@ class MyFrame(wx.Frame):
            return (sense0)
            #time.sleep(0.01)
         n_retries = 1
-        delay = .002
+        delay = 0 #for 115200 baud rate use .002
         def Rfor(a):
            for i in range(n_retries):
               #ser.flushInput()
               #ser.flushOutput()
               ser.write('m')
               ser.write(chr(a))
+              print "r sending"
               time.sleep(delay)
         def Rback(a):
            for i in range(n_retries):
@@ -148,6 +149,7 @@ class MyFrame(wx.Frame):
               #ser.flushOutput()
               ser.write('n')
               ser.write(chr(a))
+              print "l sending"
               time.sleep(delay)
         def Lfor(a):
            for i in range(n_retries):
