@@ -47,7 +47,7 @@ class MyFrame(wx.Frame):
         ControlText = "Vehicle Controls: \nRfor(speed)\nRback(speed)\nLfor(speed)\nLback(speed)\n0<=speed<255\n\n\n\nsense0, sense1 = Sense()\n tilt = Tilt()"
         VehicleControls = wx.StaticText(self, -1, ControlText, pos = (600,100))
         # change to have GUI entries...
-        port = "/Dev/tty.usbserial-FTFBGOT5"
+        port = "/dev/serial/by-id/usb-FTDI_TTL232R_FTFBGOT5-if00-port0"
         #PortText = wx.TextCtrl(self, -1, pos = (600, 50), size = (200,25))
         #PortText.WriteText(port)
         speed = 115200
