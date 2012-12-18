@@ -25,7 +25,7 @@
 #define clear(port,pin) (port &= (~pin)) // clear port pin
 #define pin_test(pins,pin) (pins & pin) // test for port pin
 #define bit_test(byte,bit) (byte & (1 << bit)) // test for bit set
-#define bit_delay_time 8.5 // bit delay for 115200 with overhead
+#define bit_delay_time 100// with 9600 baud rate //8.5 // bit delay for 115200 with overhead
 #define bit_delay() _delay_us(bit_delay_time) // RS232 bit delay
 #define half_bit_delay() _delay_us(bit_delay_time/2) // RS232 half bit delay
 #define char_delay() _delay_ms(10) // char delay
@@ -324,7 +324,7 @@ int main(void) {
    TCCR1A = (1 << COM1A1) | (0 << COM1A0); // clear OC1A on compare match
    TCCR1A |= (1 << COM1B1) | (0 << COM1B0); // clear OC1B on compare match
    TCCR1B = (0 << CS12) | (1 << CS11) | (0 << CS10) | (1 << WGM13); // prescaler /8, phase and frequency correct PWM, ICR1 TOP
-   ICR1 = 25500; // ~20 ms frequency
+   ICR1 = 255; // ~20 ms frequency
    //
    // set PWM pin to output
    //
@@ -342,7 +342,7 @@ int main(void) {
       	/* get_char(&serial_pins, serial_pin_in, &chr); */
       	/* get_char(&serial_pins, serial_pin_in, &chr); */
       	get_char(&serial_pins, serial_pin_in, &chr);
-	OCR1A = 100*(int)chr;
+	OCR1A = 1*(int)chr;
 	OCR1B = 0; 
 	/* get_char(&serial_pins, serial_pin_in, &chr); */
 	/* OCR1B = 100*(int)chr;  */
@@ -351,7 +351,7 @@ int main(void) {
       }
       if ((chr == 'o')) { // o for left, m for right
       	get_char(&serial_pins, serial_pin_in, &chr);
-      	OCR1B = 100*(int)chr;
+      	OCR1B = 1*(int)chr;
       	OCR1A = 0;
       }
    }

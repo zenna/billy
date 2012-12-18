@@ -2,9 +2,17 @@ from setup import *
 
 num_trials = 5
 
+<<<<<<< HEAD
 #Plan with our model
 def sample_sparsely(model):
     dd
+=======
+while(1):
+    try:
+        t = Tilt()
+        t_diff = t - t_old
+        t_old = t
+>>>>>>> b430b2c2eb82278f9667c10f383fb36938067cb5
 
 def build_inverse_model(current_model, tilt_hist, motor_hist):
     
@@ -35,6 +43,7 @@ for trial in range(num_trials):
     
 #         #print "min", min_tilt
     
+<<<<<<< HEAD
 #         if t > max_tilt:
 #             max_tilt = t
     
@@ -47,6 +56,21 @@ for trial in range(num_trials):
 #         else:
 #             Rback(-t_diff*256/1024)
 #             Lback(-t_diff*256/1024)
+=======
+        #print "max", max_tilcatcht
+
+        speed = 80
+        print(t_diff)
+        scalar = 10
+        if (t_diff > 0):
+            Rfor(t_diff*scalar*256/1024)
+            Lfor(t_diff*scalar*256/1024)
+	    print(t_diff*scalar*256/1024)
+        else:
+            Rback(-t_diff*scalar*256/1024)
+            Lback(-t_diff*scalar*256/1024)
+	    print(t_diff*scalar*256/1024)
+>>>>>>> b430b2c2eb82278f9667c10f383fb36938067cb5
 
 #     except:
 #         pass
